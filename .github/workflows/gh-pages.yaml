@@ -13,22 +13,22 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
-      - name: Change to docs directory
-        run: |
-          cd docs/
       - name: Read .env
         id: mdbook-version
         run: |
+          cd docs/
           . ./.env
           echo "::set-output name=MDBOOK_VERSION::${MDBOOK_VERSION}"
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v1
         with:
           mdbook-version: '${{ steps.mdbook-version.outputs.MDBOOK_VERSION }}'
-      - run: mdbook build
+      - run: |
+          cd docs/
+          mdbook build
       - name: Deploy GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./book
+          publish_dir: ./docs/book
